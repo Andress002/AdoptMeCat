@@ -1,0 +1,16 @@
+@RELATION adopcion
+
+@ATTRIBUTE edadPersona NUMERIC
+@ATTRIBUTE tieneMascotasPrevias {si,no}
+@ATTRIBUTE tipoCasa {departamento,casa}
+@ATTRIBUTE prefiereGatosActivos {si,no}
+@ATTRIBUTE peso NUMERIC
+@ATTRIBUTE raza {persian,siames,comun,exotico,otro}
+@ATTRIBUTE sexoGato {macho,hembra}
+@ATTRIBUTE comportamiento {tranquilo,jugueton,miedoso,agresivo}
+@ATTRIBUTE estaVacunado {si,no}
+@ATTRIBUTE tamaño {pequeno,mediano,grande}
+@ATTRIBUTE adoptara {si,no}
+
+@DATA
+33,si,departamento,si,2.3,siames,hembra,agresivo,si,mediano,?
