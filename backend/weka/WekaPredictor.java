@@ -34,13 +34,11 @@ public class WekaPredictor {
             double probNo = distribution[indexNo];
 
             // Si probSi es 100%, aseguramos que probNo sea 0%
-            if (probSi > 0.999) {
-                probSi = 1.0;
+            if (probSi == 1.0) {
                 probNo = 0.0;
             } 
             // Si probNo es 100%, aseguramos que probSi sea 0%
-            else if (probNo > 0.999) {
-                probNo = 1.0;
+            else if (probNo == 1.0) {
                 probSi = 0.0;
             }
 
