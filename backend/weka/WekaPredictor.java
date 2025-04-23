@@ -22,7 +22,7 @@ public class WekaPredictor {
         }
 
         // Definir un umbral de confianza
-        double threshold = 0.7; // Umbral para la probabilidad (por ejemplo, 70%)
+        double threshold = 0.5; // Umbral para la probabilidad (por ejemplo, 50%)
 
         // Clasificamos cada instancia y obtenemos las probabilidades
         for (int i = 0; i < data.numInstances(); i++) {
@@ -32,6 +32,17 @@ public class WekaPredictor {
 
             double probSi = distribution[indexSi];
             double probNo = distribution[indexNo];
+
+            // Si probSi es 100%, aseguramos que probNo sea 0%
+            if (probSi > 0.999) {
+                probSi = 1.0;
+                probNo = 0.0;
+            } 
+            // Si probNo es 100%, aseguramos que probSi sea 0%
+            else if (probNo > 0.999) {
+                probNo = 1.0;
+                probSi = 0.0;
+            }
 
             String resultado;
             if (probSi > probNo && probSi >= threshold) {
@@ -44,7 +55,8 @@ public class WekaPredictor {
 
             System.out.println("resultado: " + resultado);
             System.out.println("si: " + probSi * 100);
-            System.out.println("no: " + probNo * 100);  
+            System.out.println("no: " + probNo * 100);
+            System.out.printf("Total (si + no): %.2f%%\n", (probSi + probNo) * 100); // Verificación
         }
     }
 }

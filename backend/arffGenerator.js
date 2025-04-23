@@ -68,7 +68,7 @@ function generarARFF(datos, ruta) {
 @ATTRIBUTE peso NUMERIC
 @ATTRIBUTE raza {persian,siames,comun,exotico,otro}
 @ATTRIBUTE sexoGato {macho,hembra}
-@ATTRIBUTE comportamiento {tranquilo,jugueton,miedoso,agresivo}
+@ATTRIBUTE comportamiento {tranquilo,jugueton,timido,agresivo}
 @ATTRIBUTE estaVacunado {si,no}
 @ATTRIBUTE tamaño {pequeno,mediano,grande}
 @ATTRIBUTE adoptara {si,no}
