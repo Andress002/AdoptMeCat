@@ -3,7 +3,7 @@
     <div class="contact-wrapper">
       <div class="contact-info">
         <h2>Contáctanos</h2>
-        <p>¿Tienes preguntas sobre adopción? Estamos aquí para ayudarte.</p>
+        <p>¿Tienes preguntas sobre adopcion? Estamos aquí para ayudarte.</p>
         <div class="contact-details">
           <div class="contact-detail">
             <i class="icon-phone" aria-label="Teléfono"></i>

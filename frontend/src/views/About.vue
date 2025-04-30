@@ -91,11 +91,22 @@
       <div class="container">
         <div class="cta-content">
           <h2>¿Listo para cambiar una vida?</h2>
-          <p>Cada adopción es una historia de amor que comienza. Sé parte del cambio.</p>
+          <p>Cada adopción es una historia de amor que comienza. Se parte del cambio.</p>
           <router-link to="/contact" class="btn btn-neon">Contáctanos</router-link>
         </div>
       </div>
     </section>
+
+      <!-- Quitar esto por si no me gusta-->
+    <section class="cta-section">
+  <div class="container" style="text-align: center; padding: 3rem 0;">
+    <h2>¿Quieres saber si una persona adoptara?</h2>
+    <p>Haz clic abajo para usar nuestro predictor inteligente.</p>
+    <router-link to="/predictor" class="btn btn-neon" style="margin-top: 1rem;">
+      Ir al Predictor
+    </router-link>
+  </div>
+</section>
   </div>
 </template>
 
@@ -242,7 +253,7 @@ export default {
 
 .btn-neon {
   background-color: var(--accent);
-  color: white;
+  color: rgb(0, 0, 0);
   box-shadow: 0 0 15px var(--accent);
 }
 

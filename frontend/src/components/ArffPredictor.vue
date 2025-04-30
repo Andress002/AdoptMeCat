@@ -10,7 +10,7 @@
       <div>
         <label for="tieneMascotasPrevias">¿Tiene mascotas previas?</label>
         <select v-model="tieneMascotasPrevias" required>
-          <option value="si">Sí</option>
+          <option value="si">Si</option>
           <option value="no">No</option>
         </select>
       </div>
@@ -26,7 +26,7 @@
       <div>
         <label for="prefiereGatosActivos">¿Prefiere gatos activos?</label>
         <select v-model="prefiereGatosActivos" required>
-          <option value="si">Sí</option>
+          <option value="si">Si</option>
           <option value="no">No</option>
         </select>
       </div>
@@ -41,8 +41,8 @@
         <select v-model="raza" required>
           <option value="Persian">Persian</option>
           <option value="Siames">Siames</option>
-          <option value="Común">Común</option>
-          <option value="Exótico">Exótico</option>
+          <option value="Comun">Comun</option>
+          <option value="Exotico">Exotico</option>
           <option value="Otro">Otro</option>
         </select>
       </div>
@@ -61,13 +61,13 @@
         <select v-model="comportamiento" required>
           <option value="tranquilo">Tranquilo</option>
           <option value="juguetón">Juguetón</option>
-          <option value="tímido">Tímido</option>
+          <option value="timido">Tímido</option>
           <option value="agresivo">Agresivo</option>
         </select>
       </div>
 
       <div>
-        <label for="estaVacunado">¿Está vacunado?</label>
+        <label for="estaVacunado">¿Esta vacunado?</label>
         <select v-model="estaVacunado" required>
           <option value="si">Sí</option>
           <option value="no">No</option>

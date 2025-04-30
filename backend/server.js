@@ -24,6 +24,9 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB conectado'))
   .catch(err => console.error('Error al conectar a MongoDB:', err));
 
+// Modelo para predicciones
+const Prediction = require('./models/Prediction');
+
 // Middleware para archivos subidos
 const uploadRoutes = require('./routes/upload');
 app.use('/api/upload', uploadRoutes);
@@ -48,7 +51,6 @@ app.post('/api/predictor', (req, res) => {
   try {
     generarARFF(datos, arffPath);
 
-    // Verificar que el archivo fue generado correctamente
     if (!fs.existsSync(arffPath)) {
       console.error('❌ Archivo ARFF no se generó correctamente.');
       return res.status(500).json({ error: 'No se pudo generar el archivo ARFF.' });
@@ -58,7 +60,6 @@ app.post('/api/predictor', (req, res) => {
     return res.status(500).json({ error: 'Error interno al preparar los datos.' });
   }
 
-  // Ejecutamos Java con Weka
   const isWindows = process.platform === 'win32';
   const classpathSeparator = isWindows ? ';' : ':';
   const classPath = `.${classpathSeparator}${wekaJarPath}`;
@@ -88,14 +89,52 @@ app.post('/api/predictor', (req, res) => {
 
     console.log('✅ Resultado procesado:', { resultado, porcentajeSi, porcentajeNo });
 
-    res.json({
-      resultado,
-      porcentajeSi,
-      porcentajeNo
+    const prediccion = new Prediction({
+      nombrePersona: datos.nombrePersona, // <- Nuevo campo
+      edadPersona: datos.edadPersona,
+      tieneMascotasPrevias: datos.tieneMascotasPrevias === 'si',
+      tipoCasa: datos.tipoCasa,
+      prefiereGatosActivos: datos.prefiereGatosActivos === 'si',
+      peso: datos.peso,
+      raza: datos.raza,
+      vacunado: datos.vacunado === 'si',
+      prediccionAdopcion: resultado,
+      probabilidadAdopcionSi: porcentajeSi,
+      probabilidadAdopcionNo: porcentajeNo
     });
+
+    prediccion.save()
+      .then(() => {
+        console.log('✅ Predicción guardada exitosamente');
+        res.json({
+          resultado,
+          porcentajeSi,
+          porcentajeNo
+        });
+      })
+      .catch(error => {
+        console.error('❌ Error al guardar la predicción:', error);
+        res.status(500).json({ error: 'Error al guardar la predicción en la base de datos.' });
+      });
   });
 });
 
+// 🔍 NUEVA RUTA: Buscar predicción por raza
+app.get('/api/predictions/:raza', async (req, res) => {
+  try {
+    const razaBuscada  = req.params.raza;
+    const prediccion = await Prediction.find({ raza: razaBuscada });
+
+    if (!prediccion.length === 0) {
+      return res.status(404).json({ error: 'No se encontró una predicción para esa raza.' });
+    }
+
+    res.json(prediccion);
+  } catch (error) {
+    console.error('❌ Error al buscar la predicción:', error);
+    res.status(500).json({ error: 'Error interno al buscar la predicción.' });
+  }
+});
 
 app.get('/', (req, res) => {
   res.send('¡Bienvenido a la API de Adopción de Mascotas! 🐱🐶');
@@ -104,4 +143,3 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
-
