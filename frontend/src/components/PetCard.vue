@@ -4,7 +4,7 @@
       <img
         :src="`http://localhost:5000/uploads/${pet.image}`"
         class="card-img-top"
-        :alt="pet.type === 'cat' ? 'Imagen de gato' : 'Imagen de perro'"
+        alt="Imagen de gato"
       >
     </div>
     <div class="card-body">
@@ -13,6 +13,7 @@
       <p class="card-text"><strong>Edad:</strong> {{ pet.age }} años</p>
       <p class="card-text"><strong>Vacunado:</strong> {{ pet.vaccinated ? 'Sí' : 'No' }}</p>
       <p class="card-text"><strong>Tamaño:</strong> {{ getSizeLabel(pet.size) }}</p>
+      <p class="card-text"><strong>Raza:</strong> {{ pet.breed }}</p>
       <div class="card-buttons">
         <button v-if="isAdmin" @click="deletePet" class="btn btn-delete">Eliminar</button>
         <button v-if="showAdoptButton" @click="adoptPet" class="btn btn-adopt">Adoptar</button>
@@ -52,7 +53,7 @@ export default {
       }
     },
     adoptPet() {
-      this.$router.push({ name: 'AdoptionForm', params: { petId: this.pet._id, petType: this.pet.type } });
+      this.$router.push({ name: 'AdoptionForm', params: { petId: this.pet._id } });
     },
     getSizeLabel(size) {
       switch (size) {

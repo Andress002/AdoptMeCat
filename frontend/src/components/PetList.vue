@@ -1,12 +1,9 @@
 <template>
   <div>
-    <h1>Lista de Mascotas</h1>
+    <h1>Lista de Gatos</h1>
     <ul>
       <li v-for="mascota in mascotas" :key="mascota._id">
-        <span v-if="mascota.tipo === 'cat'">🐱</span>
-        <span v-else-if="mascota.tipo === 'dog'">🐶</span>
-        {{ mascota.name }} - {{ mascota.breed }}
-        <!-- Mostrar el botón de eliminar solo si el usuario es admin -->
+        🐱 {{ mascota.name }} - {{ mascota.breed }}
         <button
           v-if="authState.isAuthenticated && authState.userRole === 'admin'"
           @click="eliminarMascota(mascota._id)"
@@ -21,15 +18,8 @@
       <input v-model="nuevoMascota.name" placeholder="Nombre" required />
       <input v-model="nuevoMascota.breed" placeholder="Raza" required />
       <input v-model="nuevoMascota.age" placeholder="Edad" type="number" required />
-      <textarea
-        v-model="nuevoMascota.description"
-        placeholder="Descripción"
-      ></textarea>
-      <select v-model="nuevoMascota.tipo" required>
-        <option value="cat">Gato</option>
-        <option value="dog">Perro</option>
-      </select>
-      <button type="submit">Agregar Mascota</button>
+      <textarea v-model="nuevoMascota.description" placeholder="Descripción"></textarea>
+      <button type="submit">Agregar Gato</button>
     </form>
   </div>
 </template>
@@ -48,26 +38,30 @@ export default {
         breed: '',
         age: '',
         description: '',
-        tipo: 'cat', 
+        tipo: 'cat', // Fijo como 'cat'
       },
     };
   },
   computed: {
     authState() {
-      return inject('authState'); // Se inyecta el estado de autenticación desde App.vue
+      return inject('authState');
     },
   },
   async created() {
-    // Se asume que la API devuelve un array de mascotas con campos como _id, name, breed, description, tipo, etc.
-    this.mascotas = await obtenerMascotas().then(res => res.data);
+    const todas = await obtenerMascotas().then(res => res.data);
+    this.mascotas = todas.filter(m => m.tipo === 'cat'); // Solo gatos
   },
   methods: {
     async crearMascota() {
-      // Envía los datos de la nueva mascota a la API
       const mascota = await crearMascota(this.nuevoMascota).then(res => res.data);
       this.mascotas.push(mascota);
-      // Reinicia el formulario
-      this.nuevoMascota = { name: '', breed: '', age: '', description: '', tipo: 'cat' };
+      this.nuevoMascota = {
+        name: '',
+        breed: '',
+        age: '',
+        description: '',
+        tipo: 'cat', // Mantener como 'cat'
+      };
     },
     async eliminarMascota(id) {
       await eliminarMascota(id);
@@ -76,5 +70,3 @@ export default {
   },
 };
 </script>
-
-

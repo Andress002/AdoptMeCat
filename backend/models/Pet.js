@@ -7,6 +7,7 @@ const PetSchema = new mongoose.Schema({
   type: { type: String, enum: ['cat', 'dog'], required: true },
   age: { type: Number, default: 0 },
   vaccinated: { type: Boolean, default: false },
+  breed: {type: String, required: true},
   size: { type: String, default: 'Desconocido' }
 });
 

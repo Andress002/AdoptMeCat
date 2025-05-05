@@ -8,6 +8,7 @@
         <router-link to="/">Inicio</router-link>
         <router-link to="/about">Sobre Nosotros</router-link>
         <router-link to="/contact">Contacto</router-link>
+        <router-link to="/buscar-predicciones">Buscar Predicciones</router-link>
         <router-link v-if="authState.isAuthenticated && authState.userRole === 'admin'" to="/admin">
           Administrador
         </router-link>
@@ -53,7 +54,7 @@ header {
   top: 0;
   z-index: 1000;
   background: linear-gradient(90deg, #f9e8e8, #f3b576);
-  padding: 1rem 2rem;
+  padding: 0.3rem 2rem;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -65,7 +66,7 @@ header {
 }
 
 .logo a {
-  font-size: 1.6rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #fff;
   text-decoration: none;

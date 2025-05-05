@@ -7,6 +7,7 @@ import Register from '../views/Register.vue';
 import Login from '../views/Login.vue';
 import AdoptionForm from '../views/AdoptionForm.vue';
 import ArffPredictor from '../components/ArffPredictor.vue';
+import PredictionSearch from '../components/PredictionSearch.vue';
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
@@ -17,6 +18,7 @@ const routes = [
   { path: '/admin', name: 'Admin', component: Admin, meta: { requiresAuth: true } },
   { path: '/adopt/:petId/:petType', name: 'AdoptionForm', component: AdoptionForm, props: true },
   { path: '/predictor', name: 'Predictor', component: ArffPredictor }, // 👈 Cambio aquí
+  { path: '/buscar-predicciones', name: 'PredictionSearch' , component: PredictionSearch},
 ];
 
 const router = createRouter({

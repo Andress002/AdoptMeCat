@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
 
 const predictionSchema = new mongoose.Schema({
-  nombrePersona: { type: String, required: false }, // Cambiar a 'required: false'
   edadPersona: Number,
   tieneMascotasPrevias: Boolean,
   tipoCasa: String,
   prefiereGatosActivos: Boolean,
   peso: Number,
   raza: String,
+  sexoGato: String,
+  tamaño: String,
+  comportamiento: String,
   vacunado: Boolean,
   prediccionAdopcion: String,
   probabilidadAdopcionSi: Number,

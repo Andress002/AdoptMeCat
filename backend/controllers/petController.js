@@ -13,16 +13,21 @@ const getPets = async (req, res) => {
 // Crear una nueva mascota (actualizado para incluir age, vaccinated y size)
 const createPet = async (req, res) => {
   // Extraemos todos los campos del body
-  let { name, description, type, age, vaccinated, size } = req.body;
+  let { name, description, type, age, vaccinated, size, breed } = req.body;
   const image = req.file ? req.file.filename : null;  // Usando multer para la imagen
 
   try {
+
+    if (!breed) {
+      return res.status(400).json({ message: 'La raza es requerida'});
+    }
+
     // Convertir a los tipos adecuados, ya que req.body viene todo como string
     age = Number(age);
     vaccinated = vaccinated === 'true'; // Convierte el string a boolean
 
     // Crear una nueva mascota incluyendo los nuevos campos
-    const newPet = new Pet({ name, description, type, image, age, vaccinated, size });
+    const newPet = new Pet({ name, description, type, image, age, vaccinated, size, breed });
     await newPet.save();
     res.status(201).json({ message: 'Mascota creada exitosamente', pet: newPet });
   } catch (error) {

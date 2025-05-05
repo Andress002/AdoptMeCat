@@ -27,6 +27,10 @@ mongoose.connect(process.env.MONGODB_URI)
 // Modelo para predicciones
 const Prediction = require('./models/Prediction');
 
+const predictionFilterRoutes = require('./routes/predictionFilter');
+app.use('/api/predictions', predictionFilterRoutes);
+
+
 // Middleware para archivos subidos
 const uploadRoutes = require('./routes/upload');
 app.use('/api/upload', uploadRoutes);
@@ -90,13 +94,15 @@ app.post('/api/predictor', (req, res) => {
     console.log('✅ Resultado procesado:', { resultado, porcentajeSi, porcentajeNo });
 
     const prediccion = new Prediction({
-      nombrePersona: datos.nombrePersona, // <- Nuevo campo
       edadPersona: datos.edadPersona,
       tieneMascotasPrevias: datos.tieneMascotasPrevias === 'si',
       tipoCasa: datos.tipoCasa,
       prefiereGatosActivos: datos.prefiereGatosActivos === 'si',
       peso: datos.peso,
       raza: datos.raza,
+      sexoGato: datos.sexoGato,
+      tamaño: datos.tamaño,
+      comportamiento: datos.comportamiento,
       vacunado: datos.vacunado === 'si',
       prediccionAdopcion: resultado,
       probabilidadAdopcionSi: porcentajeSi,
@@ -117,23 +123,6 @@ app.post('/api/predictor', (req, res) => {
         res.status(500).json({ error: 'Error al guardar la predicción en la base de datos.' });
       });
   });
-});
-
-// 🔍 NUEVA RUTA: Buscar predicción por raza
-app.get('/api/predictions/:raza', async (req, res) => {
-  try {
-    const razaBuscada  = req.params.raza;
-    const prediccion = await Prediction.find({ raza: razaBuscada });
-
-    if (!prediccion.length === 0) {
-      return res.status(404).json({ error: 'No se encontró una predicción para esa raza.' });
-    }
-
-    res.json(prediccion);
-  } catch (error) {
-    console.error('❌ Error al buscar la predicción:', error);
-    res.status(500).json({ error: 'Error interno al buscar la predicción.' });
-  }
 });
 
 app.get('/', (req, res) => {
