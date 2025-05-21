@@ -22,7 +22,7 @@ public class WekaPredictor {
         }
 
         // Definir un umbral de confianza
-        double threshold = 0.5; // Umbral para la probabilidad (por ejemplo, 50%)
+        double threshold = 0.5; // Umbral para la probabilidad 
 
         // Clasificamos cada instancia y obtenemos las probabilidades
         for (int i = 0; i < data.numInstances(); i++) {

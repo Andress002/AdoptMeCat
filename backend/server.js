@@ -45,6 +45,9 @@ app.use('/api/auth', authRoutes);
 const adoptionsRoutes = require('./routes/adoption');
 app.use('/api/adoption', adoptionsRoutes);
 
+const contactRoutes = require('./routes/contact');
+app.use('/api/contact' , contactRoutes)
+
 // 🧠 NUEVA RUTA: Predicción con Weka
 app.post('/api/predictor', (req, res) => {
   const datos = req.body;
@@ -91,6 +94,26 @@ app.post('/api/predictor', (req, res) => {
       }
     });
 
+
+    if (porcentajeSi > 99.99) {
+      porcentajeSi = 100;
+      porcentajeNo = 0;
+    }else if( porcentajeNo > 99.99){
+      porcentajeNo = 100;
+      porcentajeSi = 0;
+    }else{
+      const total = porcentajeSi + porcentajeNo;
+      porcentajeSi = (porcentajeSi / total) * 100;
+      porcentajeNo = (porcentajeNo / total) * 100;
+
+      porcentajeSi = parseFloat(porcentajeSi.toFixed(2));
+      porcentajeNo = parseFloat(porcentajeNo.toFixed(2));
+
+      if (porcentajeSi + porcentajeNo !== 100) {
+        porcentajeNo = 100 - porcentajeSi;
+      }
+    }
+
     console.log('✅ Resultado procesado:', { resultado, porcentajeSi, porcentajeNo });
 
     const prediccion = new Prediction({
@@ -103,7 +126,7 @@ app.post('/api/predictor', (req, res) => {
       sexoGato: datos.sexoGato,
       tamaño: datos.tamaño,
       comportamiento: datos.comportamiento,
-      vacunado: datos.vacunado === 'si',
+      estaVacunado: (typeof datos.estaVacunado === 'string' && datos.estaVacunado.toLowerCase() === 'si') || datos.estaVacunado === true,
       prediccionAdopcion: resultado,
       probabilidadAdopcionSi: porcentajeSi,
       probabilidadAdopcionNo: porcentajeNo

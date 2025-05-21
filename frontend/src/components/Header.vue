@@ -4,25 +4,50 @@
       <div class="logo">
         <router-link to="/">🐾 AdoptMe!</router-link>
       </div>
-      <div class="nav-links">
-        <router-link to="/">Inicio</router-link>
-        <router-link to="/about">Sobre Nosotros</router-link>
-        <router-link to="/contact">Contacto</router-link>
-        <router-link to="/buscar-predicciones">Buscar Predicciones</router-link>
-        <router-link v-if="authState.isAuthenticated && authState.userRole === 'admin'" to="/admin">
-          Administrador
-        </router-link>
-      </div>
-      <div class="auth-links">
-        <router-link v-if="!authState.isAuthenticated" to="/login" class="btn-link">
-          Iniciar Sesión
-        </router-link>
-        <router-link v-if="!authState.isAuthenticated" to="/register" class="btn-link">
-          Registrar
-        </router-link>
-        <button v-if="authState.isAuthenticated" @click="logout" class="btn-link logout">
-          Cerrar Sesión
-        </button>
+
+      <button class="menu-toggle" @click="toggleMenu">
+        <span :class="{ open: isMenuOpen }">&#9776;</span>
+      </button>
+
+      <div :class="['nav-container', { open: isMenuOpen }]">
+        <div class="nav-links">
+          <router-link to="/" @click="closeMenu">Inicio</router-link>
+          <router-link to="/about" @click="closeMenu">Sobre Nosotros</router-link>
+          <router-link to="/contact" @click="closeMenu">Contacto</router-link>
+          <router-link to="/buscar-predicciones" @click="closeMenu">Buscar Predicciones</router-link>
+          <router-link
+            v-if="authState.isAuthenticated && authState.userRole === 'admin'"
+            to="/admin"
+            @click="closeMenu"
+          >
+            Administrador
+          </router-link>
+        </div>
+        <div class="auth-links">
+          <router-link
+            v-if="!authState.isAuthenticated"
+            to="/login"
+            class="btn-link"
+            @click="closeMenu"
+          >
+            Iniciar Sesión
+          </router-link>
+          <router-link
+            v-if="!authState.isAuthenticated"
+            to="/register"
+            class="btn-link"
+            @click="closeMenu"
+          >
+            Registrar
+          </router-link>
+          <button
+            v-if="authState.isAuthenticated"
+            @click="logout"
+            class="btn-link logout"
+          >
+            Cerrar Sesión
+          </button>
+        </div>
       </div>
     </nav>
   </header>
@@ -30,18 +55,33 @@
 
 <script>
 import authState from '../authState';
+import { ref } from 'vue';
 
 export default {
   setup() {
+    const isMenuOpen = ref(false);
+
+    const toggleMenu = () => {
+      isMenuOpen.value = !isMenuOpen.value;
+    };
+
+    const closeMenu = () => {
+      isMenuOpen.value = false;
+    };
+
     const logout = () => {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       authState.isAuthenticated = false;
       authState.userRole = 'user';
+      closeMenu();
     };
 
     return {
       authState,
+      isMenuOpen,
+      toggleMenu,
+      closeMenu,
       logout,
     };
   },
@@ -72,7 +112,33 @@ header {
   text-decoration: none;
 }
 
-.nav-links,
+/* Hamburguesa - Solo visible en móvil */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Contenedor de navegación */
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+}
+
+/* Centramos los enlaces de navegación */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin: 0 auto;
+  padding-left: 2rem;
+}
+
 .auth-links {
   display: flex;
   align-items: center;
@@ -131,17 +197,42 @@ header {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav-container {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    display: none;
+  }
+
+  .nav-container.open {
+    display: flex;
+    margin-top: 1rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+  }
+
   .nav-links,
   .auth-links {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
-    margin-top: 0.8rem;
+    margin: 0;
+    padding: 0;
+    width: 100%;
   }
 
-  .navbar {
-    flex-direction: column;
-    align-items: flex-start;
+  .nav-links {
+    margin-bottom: 1rem;
+  }
+
+  .nav-links a,
+  .btn-link {
+    width: 100%;
   }
 }
 </style>

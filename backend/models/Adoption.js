@@ -9,10 +9,10 @@ const adoptionSchema = new mongoose.Schema({
   dni: { type: String, required: true },
   petId: { 
     type: mongoose.Schema.Types.ObjectId, 
-    refPath: 'petType',  // Referencia dinámica al tipo de mascota (gato o perro)
+    refPath: 'petType',  
     required: true
   },
-  petType: {  // Campo para saber si es un gato o perro
+  petType: {  
     type: String,
     required: true,
     enum: ['cat', 'dog']

@@ -2,7 +2,7 @@
   <div class="prediction-container">
     <div class="prediction-card">
       <div class="card-header">
-        <h2>Predicción de Adopción</h2>
+        <h2>Prediccion de Adopcion</h2>
         <p class="subtitle">Complete el formulario para predecir la compatibilidad</p>
       </div>
       
@@ -13,14 +13,14 @@
             <h3 class="section-title">Información del Adoptante</h3>
             
             <div class="form-group">
-              <label for="edadPersona">Edad</label>
+              <label for="edadPersona">Edad de la persona</label>
               <input 
                 type="number" 
                 id="edadPersona" 
                 v-model="edadPersona" 
                 min="18" 
                 required 
-                placeholder="Edad en años"
+                placeholder="Ingrese su edad"
                 class="form-control"
               />
             </div>
@@ -131,7 +131,7 @@
               <div class="form-group half">
                 <label for="raza">Raza</label>
                 <select id="raza" v-model="raza" required class="form-control">
-                  <option value="Persian">Persa</option>
+                  <option value="Persian">Persian</option>
                   <option value="Siames">Siamés</option>
                   <option value="Comun">Común</option>
                   <option value="Exotico">Exótico</option>
@@ -152,8 +152,8 @@
               <label for="comportamiento">Comportamiento</label>
               <select id="comportamiento" v-model="comportamiento" required class="form-control">
                 <option value="tranquilo">Tranquilo</option>
-                <option value="juguetón">Juguetón</option>
-                <option value="timido">Tímido</option>
+                <option value="juguetón">Jugueton</option>
+                <option value="timido">Timido</option>
                 <option value="agresivo">Agresivo</option>
               </select>
             </div>
@@ -177,14 +177,14 @@
         
         <button type="submit" class="submit-btn">
           <span class="btn-icon">🔮</span>
-          Predecir Adopción
+          Predecir Adopcion
         </button>
       </form>
       
       <!-- Resultados de la predicción -->
       <transition name="fade">
         <div v-if="resultadoPrediccion" class="prediction-results">
-          <h3>Resultado de la Predicción</h3>
+          <h3>Resultado de la Prediccion</h3>
           
           <div class="result-card" :class="resultadoPrediccion === 'si' ? 'positive' : 'negative'">
             <div class="result-icon">
@@ -196,7 +196,7 @@
               </p>
               <div class="probability-bars">
                 <div class="probability-item">
-                  <span class="probability-label">Probabilidad de adopción:</span>
+                  <span class="probability-label">Probabilidad de adopcion:</span>
                   <div class="progress-bar">
                     <div class="progress-fill positive" :style="`width: ${porcentajeSi}%`"></div>
                     <span class="progress-text">{{ porcentajeSi }}%</span>
@@ -252,7 +252,6 @@ export default {
         tamaño: this.tamaño,
         comportamiento: this.comportamiento,
         estaVacunado: this.estaVacunado,
-        tamaño: this.tamaño
       };
 
       console.log(datosFormulario)
@@ -297,7 +296,7 @@ export default {
 }
 
 .card-header {
-  background-color: #afacac;
+  background-color: #ff6b6b;
   color: white;
   padding: 15px 20px;
   text-align: center;

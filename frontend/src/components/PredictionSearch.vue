@@ -3,7 +3,7 @@
     <h2 class="title">Buscar predicciones </h2>
 
     <div class="layout-container">
-      <!-- Resultados (ahora a la izquierda) -->
+      <!-- Resultados (a la izquierda) -->
       <div class="results-container">
         <div v-if="cargando" class="loading">
           <div class="spinner"></div>
@@ -32,8 +32,8 @@
                   <td>{{ p.raza }}</td>
                   <td>{{ p.sexoGato || 'N/A' }}</td>
                   <td>
-                    <span :class="p.estaVacunado === 'si' ? 'badge badge-success' : 'badge badge-danger'">
-                      {{ p.estaVacunado === 'si' ? 'Sí' : 'No' }}
+                    <span :class="p.estaVacunado ? 'badge badge-success' : 'badge badge-danger'">
+                      {{ p.estaVacunado ? 'Sí' : 'No' }}
                     </span>
                   </td>
                   <td>
@@ -59,13 +59,13 @@
         </div>
       </div>
 
-      <!-- Formulario de búsqueda (ahora a la derecha) -->
+      <!-- Formulario de búsqueda (a la derecha) -->
       <div class="form-container">
         <form @submit.prevent="buscarPredicciones" class="search-form">
           <div class="form-grid">
             <!-- Primera fila -->
             <div class="form-group">
-              <label class="form-label">Edad</label>
+              <label class="form-label">Edad de la persona</label>
               <input 
                 type="number" 
                 v-model="filtros.edadPersona" 
@@ -80,8 +80,9 @@
                 v-model="filtros.tieneMascotasPrevias" 
                 class="form-select"
               >
-                <option value="true">Sí</option>
-                <option value="false">No</option>
+                <option :value="''">Todos</option>
+                <option :value="true">Sí</option>
+                <option :value="false">No</option>
               </select>
             </div>
 
@@ -104,9 +105,9 @@
                 v-model="filtros.prefiereGatosActivos" 
                 class="form-select"
               >
-                <option value="">Todos</option>
-                <option value="si">Sí</option>
-                <option value="no">No</option>
+                <option :value="''">Todos</option>
+                <option :value="true">Sí</option>
+                <option :value="false">No</option>
               </select>
             </div>
 
@@ -158,9 +159,9 @@
                 v-model="filtros.estaVacunado" 
                 class="form-select"
               >
-                <option value="">Todos</option>
-                <option value="si">Sí</option>
-                <option value="no">No</option>
+                <option :value="''">Todos</option>
+                <option :value="true">Sí</option>
+                <option :value="false">No</option>
               </select>
             </div>
 
@@ -222,7 +223,7 @@ export default {
       predicciones: [],
       cargando: false,
       busquedaRealizada: false,
-      error: null
+      error: null,
     };
   },
 
@@ -233,15 +234,26 @@ export default {
       this.busquedaRealizada = true;
 
       try {
+        // Limpio y convierto valores string a boolean y números donde corresponde
         const filtrosLimpios = {};
         for (const [key, value] of Object.entries(this.filtros)) {
           if (value !== '') {
-            filtrosLimpios[key] = value;
+            if (
+              ['tieneMascotasPrevias', 'prefiereGatosActivos', 'estaVacunado'].includes(key)
+            ) {
+              filtrosLimpios[key] = value === true || value === 'true';
+            } else if (key === 'edadPersona') {
+              filtrosLimpios[key] = parseInt(value);
+            } else if (key === 'peso') {
+              filtrosLimpios[key] = parseFloat(value);
+            } else {
+              filtrosLimpios[key] = value;
+            }
           }
         }
 
         const response = await axios.get('http://localhost:5000/api/predictions', {
-          params: filtrosLimpios
+          params: filtrosLimpios,
         });
 
         this.predicciones = response.data;
@@ -260,18 +272,18 @@ export default {
       }
       this.predicciones = [];
       this.busquedaRealizada = false;
+      this.error = null;
     },
 
     formatPercentage(value) {
       if (value === null || value === undefined) return 'N/A';
       return `${parseFloat(value).toFixed(2)}%`;
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
-/* Estilos para reemplazar Tailwind */
 .container {
   padding: 1.5rem;
   background-color: #ffffff;

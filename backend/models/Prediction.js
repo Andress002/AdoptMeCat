@@ -10,7 +10,7 @@ const predictionSchema = new mongoose.Schema({
   sexoGato: String,
   tamaño: String,
   comportamiento: String,
-  vacunado: Boolean,
+  estaVacunado: Boolean,  // <-- Cambio aquí a Boolean
   prediccionAdopcion: String,
   probabilidadAdopcionSi: Number,
   probabilidadAdopcionNo: Number

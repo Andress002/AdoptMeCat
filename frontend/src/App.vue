@@ -6,7 +6,7 @@
       <router-view />
     </main>
     <footer>
-      <p>&copy; 2024 Adopción de Gatos. Todos los derechos reservados.</p>
+      <p>&copy; 2024 Adopcion de Gatos. Todos los derechos reservados.</p>
     </footer>
   </div>
 </template>
@@ -53,11 +53,11 @@ footer {
   background-color: var(--footer-bg);
   color: var(--footer-text);
   text-align: center;
-  padding: 1rem 0;
+  padding: 0.7rem 0;
   font-weight: 600;
   letter-spacing: 0.5px;
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
 }
 </style>

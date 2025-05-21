@@ -1,22 +1,56 @@
 <template>
-  <div class="card">
-    <div class="card-img-wrapper">
+  <div class="pet-card">
+    <div class="pet-image-container">
       <img
         :src="`http://localhost:5000/uploads/${pet.image}`"
-        class="card-img-top"
-        alt="Imagen de gato"
+        class="pet-image"
+        alt="Imagen de mascota"
       >
+      <div class="pet-logo">
+        <span class="pet-emoji">🐾</span>
+      </div>
     </div>
-    <div class="card-body">
-      <h5 class="card-title">{{ pet.name }}</h5>
-      <p class="card-text"><strong>Descripción:</strong> {{ pet.description }}</p>
-      <p class="card-text"><strong>Edad:</strong> {{ pet.age }} años</p>
-      <p class="card-text"><strong>Vacunado:</strong> {{ pet.vaccinated ? 'Sí' : 'No' }}</p>
-      <p class="card-text"><strong>Tamaño:</strong> {{ getSizeLabel(pet.size) }}</p>
-      <p class="card-text"><strong>Raza:</strong> {{ pet.breed }}</p>
-      <div class="card-buttons">
-        <button v-if="isAdmin" @click="deletePet" class="btn btn-delete">Eliminar</button>
-        <button v-if="showAdoptButton" @click="adoptPet" class="btn btn-adopt">Adoptar</button>
+    <div class="pet-info">
+      <div class="pet-header">
+        <h3 class="pet-name">{{ pet.name }}</h3>
+        <div class="pet-age">{{ pet.age }} {{ pet.age === 1 ? 'año' : 'años' }}</div>
+      </div>
+      
+      <div class="pet-tags">
+        <div class="tag tag-category">
+          <span class="tag-icon">{{ getCategoryIcon(petCategory) }}</span>
+          {{ petCategory === 'kitten' ? 'Gatito' : petCategory === 'adult' ? 'Adulto' : 'Senior' }}
+        </div>
+        <div class="tag tag-breed">
+          <span class="tag-icon">🧬</span>
+          {{ pet.breed }}
+        </div>
+        <div class="tag tag-size">
+          <span class="tag-icon">📏</span>
+          {{ getSizeLabel(pet.size) }}
+        </div>
+      </div>
+      
+      <p class="pet-description">{{ pet.description }}</p>
+      
+      <div class="pet-actions">
+        <!-- <button class="btn btn-details" @click="viewDetails">
+          Ver detalles
+        </button> -->
+        <button 
+          v-if="isAdmin" 
+          @click="deletePet" 
+          class="btn btn-delete"
+        >
+          Eliminar
+        </button>
+        <button 
+          v-if="showAdoptButton && !isAdmin" 
+          @click="adoptPet" 
+          class="btn btn-adopt"
+        >
+          Adoptar
+        </button>
       </div>
     </div>
   </div>
@@ -28,16 +62,40 @@ import axios from 'axios';
 export default {
   name: 'PetCard',
   props: {
-    pet: Object,
-    showAdoptButton: Boolean
+    pet: {
+      type: Object,
+      required: true
+    },
+    showAdoptButton: {
+      type: Boolean,
+      default: true
+    }
   },
   computed: {
     isAdmin() {
-      const user = JSON.parse(localStorage.getItem('user'));
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
       return user && user.role === 'admin';
+    },
+    petCategory() {
+      const age = this.pet.age;
+      if (age < 1) return 'kitten';
+      if (age < 7) return 'adult';
+      return 'senior';
     }
   },
   methods: {
+    getCategoryIcon(category) {
+      switch (category) {
+        case 'kitten':
+          return '🐱';
+        case 'adult':
+          return '😺';
+        case 'senior':
+          return '🧶';
+        default:
+          return '🐈';
+      }
+    },
     async deletePet() {
       if (!confirm("¿Estás seguro de que deseas eliminar esta mascota?")) return;
       try {
@@ -53,10 +111,22 @@ export default {
       }
     },
     adoptPet() {
-      this.$router.push({ name: 'AdoptionForm', params: { petId: this.pet._id } });
+      this.$router.push({ 
+        name: 'AdoptionForm', 
+        params: { 
+          petId: this.pet._id, 
+          petType: this.pet.type 
+        } 
+      });
+    },
+    viewDetails() {
+      this.$router.push({ 
+        name: 'PetDetails', 
+        params: { petId: this.pet._id } 
+      });
     },
     getSizeLabel(size) {
-      switch (size) {
+      switch (size?.toLowerCase()) {
         case 'small': return 'Pequeño';
         case 'medium': return 'Mediano';
         case 'large': return 'Grande';
@@ -68,92 +138,163 @@ export default {
 </script>
 
 <style scoped>
-.card {
-  width: 320px;
-  background: #eea318;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+.pet-card {
+  width: 100%;
+  max-width: 340px;
+  border-radius: 16px;
   overflow: hidden;
-  margin: 20px auto;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin: 16px;
 }
 
-.card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+.pet-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
-.card-img-wrapper {
-  height: 220px;
-  overflow: hidden;
+.pet-image-container {
   position: relative;
+  height: 200px;
+  overflow: hidden;
 }
 
-.card-img-top {
+.pet-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  transition: transform 0.3s ease;
 }
 
-.card-img-wrapper:hover .card-img-top {
-  transform: scale(1.08);
-}
-
-.card-body {
-  padding: 1.4rem;
-  text-align: center;
-  background-color: #fff;
-}
-
-.card-title {
-  font-size: 1.6rem;
-  color: #333;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
-
-.card-text {
-  font-size: 1rem;
-  color: #555;
-  margin-bottom: 0.4rem;
-}
-
-.card-buttons {
+.pet-logo {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: white;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 12px;
-  margin-top: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pet-emoji {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.pet-info {
+  padding: 16px 20px 20px;
+}
+
+.pet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.pet-name {
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.pet-age {
+  background-color: #5c94e7;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.pet-tags {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.tag {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #666;
+  background-color: #f5f5f5;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.tag-icon {
+  margin-right: 4px;
+  font-size: 12px;
+}
+
+.pet-description {
+  color: #666;
+  font-size: 15px;
+  line-height: 1.4;
+  margin-bottom: 20px;
+}
+
+.pet-actions {
+  display: flex;
+  gap: 10px;
 }
 
 .btn {
-  padding: 0.5rem 1.2rem;
+  padding: 10px 16px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 500;
   border: none;
-  border-radius: 25px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
   cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  text-align: center;
+}
+
+.btn-details {
+  background-color: #5c94e7;
   color: white;
 }
 
-.btn-adopt {
-  background: #6C5CE7;
-  box-shadow: 0 0 8px #6C5CE7;
-}
-
-.btn-adopt:hover {
-  background: #5944d4;
-  box-shadow: 0 0 10px #5944d4;
+.btn-details:hover {
+  background-color: #5b4dd1;
 }
 
 .btn-delete {
-  background: #FF6B6B;
-  box-shadow: 0 0 8px #FF6B6B;
+  background-color: #fff0f0;
+  color: #ff5252;
+  border: 1px solid #ff5252;
 }
 
 .btn-delete:hover {
-  background: #e44d4d;
-  box-shadow: 0 0 10px #e44d4d;
+  background-color: #fff0f0;
+}
+
+.btn-adopt {
+  background-color: #4cd964;
+  color: white;
+}
+
+.btn-adopt:hover {
+  background-color: #3cc554;
+}
+
+.tag-category {
+  background-color: #fff3e0;
+  color: #ff9800;
 }
 </style>

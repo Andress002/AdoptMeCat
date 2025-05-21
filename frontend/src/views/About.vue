@@ -1,6 +1,6 @@
 <template>
   <div class="about-container">
-    <!-- Sección Hero -->
+    <!-- Hero Section -->
     <section class="hero-section">
       <div class="container">
         <div class="hero-content">
@@ -9,13 +9,16 @@
           <p>En Mundo Gatuno, creemos que cada animal merece amor, cuidado y un hogar donde pueda florecer. Nuestra misión es hacer que la adopción responsable sea una experiencia significativa y llena de alegría.</p>
         </div>
       </div>
+      <div class="hero-shape"></div>
     </section>
 
-    <!-- Sección Misión -->
+    <!-- Misión Section -->
     <section class="mission-section">
       <div class="container">
-        <h2 class="section-title">Nuestra Misión</h2>
-        <div class="section-divider"></div>
+        <div class="section-header">
+          <h2 class="section-title">Nuestra Misión</h2>
+          <div class="section-divider"></div>
+        </div>
         <div class="mission-content">
           <div class="mission-image">
             <img src="../assets/images/mission.jpg" alt="Nuestra misión" onerror="this.src='https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80'">
@@ -32,12 +35,14 @@
       </div>
     </section>
 
-    <!-- Sección ¿Por Qué Adoptar? -->
+    <!-- Por Qué Adoptar Section -->
     <section id="why-adopt" class="why-adopt-section">
       <div class="container">
-        <h2 class="section-title">¿Por Qué Adoptar?</h2>
-        <div class="section-divider"></div>
-        <p class="section-intro">La adopción de un gato es más que simplemente llevar un nuevo amigo a casa: es un acto de amor, compasión y compromiso. Aquí te contamos por qué adoptar es una de las mejores decisiones que puedes tomar:</p>
+        <div class="section-header">
+          <h2 class="section-title">¿Por Qué Adoptar?</h2>
+          <div class="section-divider"></div>
+          <p class="section-intro">La adopción de un gato es más que simplemente llevar un nuevo amigo a casa: es un acto de amor, compasión y compromiso.</p>
+        </div>
         <div class="reasons-grid">
           <div class="reason-card">
             <div class="reason-icon">❤️</div>
@@ -58,55 +63,18 @@
       </div>
     </section>
 
-    <!-- Sección Testimonios -->
-    <section id="testimonials" class="testimonials-section">
+    <!-- Predictor Section -->
+    <section class="predictor-section">
       <div class="container">
-        <h2 class="section-title">Historias de Adopción</h2>
-        <div class="section-divider"></div>
-        <p class="section-intro">Cada adopción es un nuevo comienzo, una oportunidad para escribir una historia llena de amor y esperanza. Conoce a algunas familias que han abierto sus corazones a un amigo peludo.</p>
-        <div class="testimonials-slider" ref="testimonialsSlider">
-          <div v-for="(testimonial, index) in testimonials" :key="index" class="testimonial-card">
-            <div class="testimonial-image">
-              <img :src="testimonial.image" :alt="testimonial.name">
-            </div>
-            <div class="testimonial-content">
-              <blockquote>{{ testimonial.quote }}</blockquote>
-              <p class="testimonial-author">- {{ testimonial.name }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="slider-controls">
-          <button @click="prevSlide" class="slider-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          </button>
-          <button @click="nextSlide" class="slider-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-          </button>
+        <div class="predictor-content">
+          <h2>¿Quieres saber si una persona adoptará?</h2>
+          <p>Utiliza nuestro predictor inteligente para evaluar la compatibilidad</p>
+          <router-link to="/predictor" class="btn btn-accent">
+            Ir al Predictor
+          </router-link>
         </div>
       </div>
     </section>
-
-    <!-- Llamado a la acción -->
-    <section class="cta-section">
-      <div class="container">
-        <div class="cta-content">
-          <h2>¿Listo para cambiar una vida?</h2>
-          <p>Cada adopción es una historia de amor que comienza. Se parte del cambio.</p>
-          <router-link to="/contact" class="btn btn-neon">Contáctanos</router-link>
-        </div>
-      </div>
-    </section>
-
-      <!-- Quitar esto por si no me gusta-->
-    <section class="cta-section">
-  <div class="container" style="text-align: center; padding: 3rem 0;">
-    <h2>¿Quieres saber si una persona adoptara?</h2>
-    <p>Haz clic abajo para usar nuestro predictor inteligente.</p>
-    <router-link to="/predictor" class="btn btn-neon" style="margin-top: 1rem;">
-      Ir al Predictor
-    </router-link>
-  </div>
-</section>
   </div>
 </template>
 
@@ -135,30 +103,6 @@ export default {
     };
   },
   methods: {
-    nextSlide() {
-      if (!this.$refs.testimonialsSlider) return;
-      
-      const slider = this.$refs.testimonialsSlider;
-      const cardWidth = slider.querySelector('.testimonial-card').offsetWidth + 20; // 20px de gap
-      
-      this.currentSlide = (this.currentSlide + 1) % this.testimonials.length;
-      slider.scrollTo({
-        left: cardWidth * this.currentSlide,
-        behavior: 'smooth'
-      });
-    },
-    prevSlide() {
-      if (!this.$refs.testimonialsSlider) return;
-      
-      const slider = this.$refs.testimonialsSlider;
-      const cardWidth = slider.querySelector('.testimonial-card').offsetWidth + 20; // 20px de gap
-      
-      this.currentSlide = (this.currentSlide - 1 + this.testimonials.length) % this.testimonials.length;
-      slider.scrollTo({
-        left: cardWidth * this.currentSlide,
-        behavior: 'smooth'
-      });
-    },
     initAnimations() {
       const elements = document.querySelectorAll('.fade-in');
       const observer = new IntersectionObserver(entries => {
@@ -173,21 +117,12 @@ export default {
   },
   mounted() {
     this.initAnimations();
-    
-    // Auto-scroll testimonios
-    this.slideInterval = setInterval(() => {
-      this.nextSlide();
-    }, 5000);
-  },
-  beforeDestroy() {
-    // Limpiar el intervalo cuando el componente se destruye
-    clearInterval(this.slideInterval);
   }
 };
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
   --primary: #FF6B81;
@@ -196,115 +131,123 @@ export default {
   --light-bg: #FFFDF9;
   --dark-text: #2C3E50;
   --card-bg: #ffffff;
-  --shadow: rgba(0, 0, 0, 0.15);
+  --shadow: rgba(0, 0, 0, 0.1);
 }
 
 /* Estilos generales */
 .about-container {
-  font-family: 'Baloo 2', cursive;
-  background: linear-gradient(135deg, #ffe9f3, #fff4d2);
+  font-family: 'Inter', sans-serif;
   color: var(--dark-text);
   min-height: 100vh;
+  background-color: #FAFAFA;
 }
 
 .container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 2rem;
   position: relative;
   z-index: 2;
 }
 
-.section-title {
+.section-header {
   text-align: center;
-  font-size: 2.4rem;
+  margin-bottom: 3rem;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
   margin-bottom: 1rem;
   color: var(--accent);
+  position: relative;
+  display: inline-block;
 }
 
 .section-divider {
-  width: 80px;
+  width: 60px;
   height: 4px;
   background: var(--primary);
-  margin: 0 auto 2rem;
+  margin: 0.5rem auto 0;
   border-radius: 2px;
 }
 
 .section-intro {
-  text-align: center;
-  max-width: 800px;
-  margin: 0 auto 2rem;
+  max-width: 700px;
+  margin: 1.5rem auto 0;
   font-size: 1.1rem;
+  line-height: 1.6;
+  color: #666;
 }
 
 .btn {
-  padding: 0.9rem 2rem;
-  border-radius: 12px;
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
   font-size: 1rem;
-  font-weight: bold;
+  font-weight: 600;
   text-decoration: none;
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  border: none;
 }
 
-.btn-neon {
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 107, 129, 0.3);
+}
+
+.btn-primary:hover {
+  background-color: #ff5371;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 129, 0.4);
+}
+
+.btn-accent {
   background-color: var(--accent);
-  color: rgb(0, 0, 0);
-  box-shadow: 0 0 15px var(--accent);
+  color: white;
+  box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
 }
 
-.btn-neon:hover {
-  background-color: #a29bfe;
-  box-shadow: 0 0 20px #a29bfe;
-  transform: translateY(-3px);
+.btn-accent:hover {
+  background-color: #5b4bd4;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
 }
 
 /* Hero Section */
 .hero-section {
-  padding: 6rem 0;
-  background: radial-gradient(circle at top left, #ffe9f3, #fff4d2);
-  animation: bgPulse 10s ease infinite;
+  padding: 8rem 0 6rem;
+  background: linear-gradient(135deg, #ffe9f3, #fff4d2);
   position: relative;
   overflow: hidden;
   text-align: center;
 }
 
-.hero-section::before {
-  content: "";
+.hero-shape {
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
-  animation: rotate 20s linear infinite;
-  z-index: 1;
-  pointer-events: none;
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes bgPulse {
-  0% { background-position: left top; }
-  50% { background-position: right bottom; }
-  100% { background-position: left top; }
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background-color: #FAFAFA;
+  clip-path: polygon(0 100%, 100% 100%, 100% 0, 0 100%);
 }
 
 .hero-content {
   max-width: 800px;
   margin: 0 auto;
+  position: relative;
+  z-index: 2;
 }
 
 .hero-content h1 {
-  font-size: 3.5rem;
-  font-weight: 700;
+  font-size: 4rem;
+  font-weight: 800;
   color: var(--primary);
   margin-bottom: 1rem;
   line-height: 1.1;
@@ -324,6 +267,10 @@ export default {
   margin-bottom: 2rem;
   animation: fadeInUp 1s ease 0.4s forwards;
   opacity: 0;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
 }
 
 @keyframes fadeInUp {
@@ -339,81 +286,106 @@ export default {
 
 /* Sección Misión */
 .mission-section {
-  padding: 5rem 0;
+  padding: 6rem 0;
   background: #fff;
+  position: relative;
 }
 
 .mission-content {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
   align-items: center;
-  gap: 2rem;
 }
 
 .mission-image {
-  flex: 1;
-  min-width: 300px;
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.mission-image::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 100px;
+  height: 100px;
+  background-color: rgba(255, 107, 129, 0.2);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+.mission-image::after {
+  content: "";
+  position: absolute;
+  bottom: -30px;
+  right: -30px;
+  width: 150px;
+  height: 150px;
+  background-color: rgba(108, 92, 231, 0.15);
+  border-radius: 50%;
+  z-index: -1;
 }
 
 .mission-image img {
   width: 100%;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px var(--shadow);
-  transition: transform 0.3s ease;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+  transition: transform 0.5s ease;
 }
 
-.mission-image img:hover {
-  transform: scale(1.03);
+.mission-image:hover img {
+  transform: scale(1.05);
 }
 
 .mission-text {
-  flex: 1;
-  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .mission-text p {
-  margin-bottom: 1.5rem;
   font-size: 1.1rem;
-  line-height: 1.6;
+  line-height: 1.7;
+  color: #555;
+}
+
+.mission-text .btn {
+  align-self: flex-start;
+  margin-top: 1rem;
 }
 
 /* Sección Por Qué Adoptar */
 .why-adopt-section {
-  padding: 5rem 0;
-  background: #fef6e4;
+  padding: 6rem 0;
+  background-color: #f8f9fa;
   position: relative;
-  overflow: hidden;
-}
-
-.why-adopt-section::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff6b81' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  opacity: 0.5;
-  z-index: 1;
 }
 
 .reasons-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
-  margin-top: 3rem;
+  margin-top: 2rem;
 }
 
 .reason-card {
   background: var(--card-bg);
-  padding: 2rem;
-  border-radius: 20px;
+  padding: 2.5rem;
+  border-radius: 16px;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(255, 107, 129, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
   z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .reason-card::before {
@@ -422,155 +394,96 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  height: 5px;
+  height: 4px;
   background: linear-gradient(90deg, var(--primary), var(--accent));
 }
 
 .reason-card:hover {
-  transform: translateY(-7px);
-  box-shadow: 0 15px 30px rgba(255, 107, 129, 0.2);
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 .reason-icon {
-  font-size: 3rem;
+  font-size: 3.5rem;
   margin-bottom: 1.5rem;
   display: inline-block;
+  position: relative;
+}
+
+.reason-icon::after {
+  content: "";
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255, 107, 129, 0.1);
+  border-radius: 50%;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .reason-card h3 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
   color: var(--primary);
+  font-weight: 700;
 }
 
 .reason-card p {
-  color: var(--dark-text);
+  color: #666;
   line-height: 1.6;
 }
 
-/* Sección Testimonios */
-.testimonials-section {
+/* Predictor Section */
+.predictor-section {
   padding: 5rem 0;
-  background-color: white;
-}
-
-.testimonials-slider {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-  gap: 20px;
-  padding: 1.5rem 0;
-  scroll-behavior: smooth;
-}
-
-.testimonials-slider::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
-.testimonial-card {
-  flex: 0 0 auto;
-  width: calc(100% - 40px);
-  max-width: 500px;
-  scroll-snap-align: center;
-  background-color: #fff;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(108, 92, 231, 0.1);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-}
-
-.testimonial-image {
-  height: 200px;
-  overflow: hidden;
-}
-
-.testimonial-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.testimonial-content {
-  padding: 2rem;
-  text-align: center;
-}
-
-.testimonial-content blockquote {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  margin-bottom: 1rem;
-  font-style: italic;
-  color: var(--dark-text);
-}
-
-.testimonial-author {
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.slider-controls {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-.slider-btn {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: white;
-  border: 2px solid var(--accent);
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.slider-btn:hover {
-  background-color: var(--accent);
-  color: white;
-}
-
-/* Llamado a la acción */
-.cta-section {
-  padding: 5rem 0;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, #FAFAFA, #FAFAFA);
   color: rgb(0, 0, 0);
   text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
-.cta-content {
+.predictor-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.1;
+}
+
+.predictor-content {
   max-width: 700px;
   margin: 0 auto;
+  position: relative;
+  z-index: 2;
 }
 
-.cta-content h2 {
+.predictor-content h2 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
+  font-weight: 700;
 }
 
-.cta-content p {
+.predictor-content p {
   font-size: 1.2rem;
   margin-bottom: 2rem;
   opacity: 0.9;
 }
 
-.cta-content .btn-neon {
+.predictor-content .btn {
   background-color: white;
   color: var(--accent);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.cta-content .btn-neon:hover {
-  background-color: var(--light-bg);
+.predictor-content .btn:hover {
   transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 /* Animación Fade In */
@@ -586,7 +499,44 @@ export default {
 }
 
 /* Responsive */
+@media (max-width: 992px) {
+  .mission-content {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  
+  .mission-image {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .mission-text .btn {
+    align-self: center;
+  }
+}
+
 @media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 3rem;
+  }
+  
+  .section-title {
+    font-size: 2.2rem;
+  }
+  
+  .hero-section,
+  .mission-section,
+  .why-adopt-section,
+  .predictor-section {
+    padding: 4rem 0;
+  }
+  
+  .reason-card {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
   .hero-content h1 {
     font-size: 2.5rem;
   }
@@ -595,37 +545,11 @@ export default {
     font-size: 1.3rem;
   }
   
-  .hero-content p {
-    font-size: 1.1rem;
-  }
-  
-  .section-title {
-    font-size: 2rem;
-  }
-  
-  .mission-content {
-    flex-direction: column;
-  }
-  
-  .testimonial-card {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-content h1 {
-    font-size: 2rem;
-  }
-  
   .section-title {
     font-size: 1.8rem;
   }
   
-  .reason-card {
-    padding: 1.5rem;
-  }
-  
-  .cta-content h2 {
+  .predictor-content h2 {
     font-size: 2rem;
   }
 }

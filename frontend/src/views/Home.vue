@@ -8,7 +8,7 @@
             <h1>¡Adopta Amor en Forma de Gato!</h1>
             <p>Tu mejor amigo está esperándote. Salva una vida, recibe amor incondicional 😻</p>
             <div class="hero-buttons">
-              <router-link to="/about" class="btn btn-neon">Conócenos</router-link>
+              <router-link to="/about" class="btn btn-neon">Conocenos</router-link>
               <a href="#pets-gallery" class="btn btn-outline">Ver Gatitos</a>
             </div>
           </div>
@@ -29,6 +29,8 @@
           <button 
             @click="showFilters = !showFilters" 
             class="filter-toggle-btn"
+            :aria-expanded="showFilters"
+            aria-controls="filters-panel"
           >
             <span>Filtros avanzados</span>
             <svg 
@@ -42,104 +44,146 @@
               stroke-linecap="round" 
               stroke-linejoin="round"
               :class="{'rotate-180': showFilters}"
+              class="transition-transform"
             >
               <path d="m6 9 6 6 6-6"/>
             </svg>
           </button>
           
-          <div v-if="showFilters" class="filters-panel">
-            <div class="filter-group">
-              <h3>Edad</h3>
-              <div class="filter-options">
-                <button 
-                  v-for="filter in filters" 
-                  :key="filter.value"
-                  @click="activeFilter = filter.value; filterPets()"
-                  :class="['filter-option', activeFilter === filter.value ? 'active' : '']"
-                >
-                  {{ filter.label }}
-                </button>
+          <transition name="fade">
+            <div v-if="showFilters" id="filters-panel" class="filters-panel">
+              <div class="filter-group">
+                <h3>Edad</h3>
+                <div class="filter-options">
+                  <button 
+                    v-for="filter in filters" 
+                    :key="filter.value"
+                    @click="activeFilter = filter.value; filterPets()"
+                    :class="['filter-option', activeFilter === filter.value ? 'active' : '']"
+                  >
+                    {{ filter.label }}
+                  </button>
+                </div>
+              </div>
+              
+              <div class="filter-group">
+                <h3>Raza</h3>
+                <div class="filter-options">
+                  <button 
+                    v-for="breed in availableBreeds" 
+                    :key="breed"
+                    @click="selectedBreed = selectedBreed === breed ? '' : breed; filterPets()"
+                    :class="['filter-option', selectedBreed === breed ? 'active' : '']"
+                  >
+                    {{ breed }}
+                  </button>
+                </div>
+              </div>
+              
+              <div class="filter-group">
+                <h3>Tamaño</h3>
+                <div class="filter-options">
+                  <button 
+                    v-for="size in availableSizes" 
+                    :key="size"
+                    @click="selectedSize = selectedSize === size ? '' : size; filterPets()"
+                    :class="['filter-option', selectedSize === size ? 'active' : '']"
+                  >
+                    {{ size }}
+                  </button>
+                </div>
+              </div>
+              
+              <div class="filter-actions">
+                <button @click="resetFilters" class="btn btn-secondary">Limpiar filtros</button>
               </div>
             </div>
-            
-            <div class="filter-group">
-              <h3>Raza</h3>
-              <div class="filter-options">
-                <button 
-                  v-for="breed in availableBreeds" 
-                  :key="breed"
-                  @click="selectedBreed = selectedBreed === breed ? '' : breed; filterPets()"
-                  :class="['filter-option', selectedBreed === breed ? 'active' : '']"
-                >
-                  {{ breed }}
-                </button>
-              </div>
-            </div>
-            
-            <div class="filter-group">
-              <h3>Tamaño</h3>
-              <div class="filter-options">
-                <button 
-                  v-for="size in availableSizes" 
-                  :key="size"
-                  @click="selectedSize = selectedSize === size ? '' : size; filterPets()"
-                  :class="['filter-option', selectedSize === size ? 'active' : '']"
-                >
-                  {{ size }}
-                </button>
-              </div>
-            </div>
-            
-            <div class="filter-actions">
-              <button @click="resetFilters" class="btn btn-secondary">Limpiar filtros</button>
-            </div>
-          </div>
+          </transition>
         </div>
         
         <!-- Búsqueda -->
         <div class="search-container">
           <div class="search-input">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              stroke-width="2" 
+              stroke-linecap="round" 
+              stroke-linejoin="round" 
+              class="search-icon"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
             <input 
               type="text" 
               v-model="searchQuery" 
               placeholder="Buscar por nombre o características..." 
-              @input="filterPets"
+              @input="debouncedFilter"
             />
           </div>
         </div>
         
         <!-- Filtros activos -->
-        <div v-if="hasActiveFilters" class="active-filters">
-          <span>Filtros activos:</span>
-          <div class="filter-tags">
-            <div v-if="activeFilter !== 'all'" class="filter-tag">
-              {{ getFilterLabel(activeFilter) }}
-              <button @click="activeFilter = 'all'; filterPets()" class="tag-remove">×</button>
-            </div>
-            <div v-if="selectedBreed" class="filter-tag">
-              {{ selectedBreed }}
-              <button @click="selectedBreed = ''; filterPets()" class="tag-remove">×</button>
-            </div>
-            <div v-if="selectedSize" class="filter-tag">
-              {{ selectedSize }}
-              <button @click="selectedSize = ''; filterPets()" class="tag-remove">×</button>
+        <transition name="fade">
+          <div v-if="hasActiveFilters" class="active-filters">
+            <span>Filtros activos:</span>
+            <div class="filter-tags">
+              <div v-if="activeFilter !== 'all'" class="filter-tag">
+                {{ getFilterLabel(activeFilter) }}
+                <button @click="activeFilter = 'all'; filterPets()" class="tag-remove" aria-label="Eliminar filtro de edad">×</button>
+              </div>
+              <div v-if="selectedBreed" class="filter-tag">
+                {{ selectedBreed }}
+                <button @click="selectedBreed = ''; filterPets()" class="tag-remove" aria-label="Eliminar filtro de raza">×</button>
+              </div>
+              <div v-if="selectedSize" class="filter-tag">
+                {{ selectedSize }}
+                <button @click="selectedSize = ''; filterPets()" class="tag-remove" aria-label="Eliminar filtro de tamaño">×</button>
+              </div>
             </div>
           </div>
-        </div>
+        </transition>
         
         <!-- Mascotas -->
-        <div v-if="filteredPets.length" class="pets-grid">
+        <transition-group name="pet-list" tag="div" class="pets-grid">
           <div v-for="pet in filteredPets" :key="pet._id" class="pet-card">
             <PetCard :pet="pet" :showAdoptButton="isUser" @pet-deleted="removePet" />
           </div>
-        </div>
+        </transition-group>
         
         <!-- Estado vacío -->
-        <div v-else class="empty-state">
-          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5c.67 0 1.35.09 2 .26 1.78-2 5.03-2.84 6.42-2.26 1.4.58-.42 7-.42 7 .57 1.07 1 2.24 1 3.44C21 17.9 16.97 21 12 21s-9-3-9-7.56c0-1.25.5-2.4 1-3.44 0 0-1.89-6.42-.5-7 1.39-.58 4.72.23 6.5 2.23A9.04 9.04 0 0 1 12 5Z"/><path d="M8 14v.5"/><path d="M16 14v.5"/><path d="M11.25 16.25h1.5L12 17l-.75-.75Z"/></svg>
-          <p>No se encontraron gatitos con esos criterios</p>
-          <button @click="resetFilters" class="btn btn-secondary">Ver todos</button>
+        <transition name="fade">
+          <div v-if="!filteredPets.length && !isLoading" class="empty-state">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="64" 
+              height="64" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              stroke-width="1" 
+              stroke-linecap="round" 
+              stroke-linejoin="round"
+            >
+              <path d="M12 5c.67 0 1.35.09 2 .26 1.78-2 5.03-2.84 6.42-2.26 1.4.58-.42 7-.42 7 .57 1.07 1 2.24 1 3.44C21 17.9 16.97 21 12 21s-9-3-9-7.56c0-1.25.5-2.4 1-3.44 0 0-1.89-6.42-.5-7 1.39-.58 4.72.23 6.5 2.23A9.04 9.04 0 0 1 12 5Z"/>
+              <path d="M8 14v.5"/>
+              <path d="M16 14v.5"/>
+              <path d="M11.25 16.25h1.5L12 17l-.75-.75Z"/>
+            </svg>
+            <p>No se encontraron gatitos con esos criterios</p>
+            <button @click="resetFilters" class="btn btn-secondary">Ver todos</button>
+          </div>
+        </transition>
+        
+        <!-- Estado de carga -->
+        <div v-if="isLoading" class="loading-state">
+          <div class="loader"></div>
+          <p>Cargando gatitos...</p>
         </div>
       </div>
     </section>
@@ -147,22 +191,17 @@
     <!-- PROCESO -->
     <section class="process-section">
       <div class="container">
-        <h2 class="section-title">📋 ¿Cómo Funciona?</h2>
+        <h2 class="section-title">📋 ¿Como Funciona?</h2>
         <div class="process-steps">
-          <div class="process-step">
-            <span class="step-icon">🔍</span>
-            <h3>Explora</h3>
-            <p>Descubre gatos adorables esperando una segunda oportunidad.</p>
-          </div>
-          <div class="process-step">
-            <span class="step-icon">📞</span>
-            <h3>Contacta</h3>
-            <p>Habla con nuestro equipo para saber más sobre tu elegido.</p>
-          </div>
-          <div class="process-step">
-            <span class="step-icon">🏡</span>
-            <h3>Adopta</h3>
-            <p>Completa el proceso y dale a un peludito su nuevo hogar.</p>
+          <div 
+            v-for="(step, index) in adoptionSteps" 
+            :key="index"
+            class="process-step"
+            :class="{'process-step-delay-1': index === 1, 'process-step-delay-2': index === 2}"
+          >
+            <span class="step-icon">{{ step.icon }}</span>
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.description }}</p>
           </div>
         </div>
       </div>
@@ -173,9 +212,13 @@
       <div class="container">
         <h2 class="section-title">💬 Historias Felices</h2>
         <div class="testimonials-slider" ref="testimonialsSlider">
-          <div v-for="(testimonial, index) in testimonials" :key="index" class="testimonial-card">
+          <div 
+            v-for="(testimonial, index) in testimonials" 
+            :key="index" 
+            class="testimonial-card"
+          >
             <div class="testimonial-image">
-              <img :src="testimonial.image" :alt="testimonial.name" />
+              <img :src="testimonial.image" :alt="`${testimonial.name} con ${testimonial.catName}`" />
             </div>
             <div class="testimonial-content">
               <p class="testimonial-text">"{{ testimonial.text }}"</p>
@@ -184,11 +227,44 @@
           </div>
         </div>
         <div class="slider-controls">
-          <button @click="prevSlide" class="slider-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          <button @click="prevSlide" class="slider-btn" aria-label="Testimonio anterior">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="24" 
+              height="24" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              stroke-width="2" 
+              stroke-linecap="round" 
+              stroke-linejoin="round"
+            >
+              <path d="m15 18-6-6 6-6"/>
+            </svg>
           </button>
-          <button @click="nextSlide" class="slider-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          <div class="slider-dots">
+            <button 
+              v-for="(_, index) in testimonials" 
+              :key="index"
+              @click="goToSlide(index)"
+              :class="['slider-dot', currentSlide === index ? 'active' : '']"
+              :aria-label="`Ir al testimonio ${index + 1}`"
+            ></button>
+          </div>
+          <button @click="nextSlide" class="slider-btn" aria-label="Testimonio siguiente">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="24" 
+              height="24" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              stroke-width="2" 
+              stroke-linecap="round" 
+              stroke-linejoin="round"
+            >
+              <path d="m9 18 6-6-6-6"/>
+            </svg>
           </button>
         </div>
       </div>
@@ -199,8 +275,8 @@
       <div class="container">
         <div class="cta-content">
           <h2>¿Listo para cambiar una vida?</h2>
-          <p>Cada adopción es una historia de amor que comienza. Sé parte del cambio.</p>
-          <router-link to="/contact" class="btn btn-neon">Contáctanos</router-link>
+          <p>Cada adopcion es una historia de amor que comienza. Se parte del cambio.</p>
+          <router-link to="/contact" class="btn btn-neon">Contactanos</router-link>
         </div>
       </div>
     </section>
@@ -208,114 +284,145 @@
 </template>
 
 <script>
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import PetCard from '../components/PetCard.vue';
 import axios from 'axios';
 
 export default {
   name: 'Home',
-  components: { PetCard },
-  data() {
-    return {
-      pets: [],
-      allPets: [],
-      isUser: false,
-      searchQuery: '',
-      activeFilter: 'all',
-      selectedBreed: '',
-      selectedSize: '',
-      currentSlide: 0,
-      showFilters: false,
-      
-      // Filtros disponibles
-      filters: [
-        { label: 'Todos', value: 'all' },
-        { label: 'Cachorros', value: 'kitten' },
-        { label: 'Adultos', value: 'adult' },
-        { label: 'Seniors', value: 'senior' }
-      ],
-      
-      // Testimonios
-      testimonials: [
-        {
-          name: 'María',
-          catName: 'Luna',
-          text: 'Adoptar a Luna fue la mejor decisión que tomamos. Ha llenado nuestro hogar de alegría y ronroneos.',
-          image: 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
-        },
-        {
-          name: 'Carlos',
-          catName: 'Simba',
-          text: 'Simba llegó a mi vida cuando más lo necesitaba. Es increíble cómo un gatito puede cambiar tu perspectiva.',
-          image: 'https://images.unsplash.com/photo-1566847438217-76e82d383f84?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
-        },
-        {
-          name: 'Ana',
-          catName: 'Milo',
-          text: 'El proceso de adopción fue sencillo y el equipo muy atento. Milo se adaptó rápidamente a su nuevo hogar.',
-          image: 'https://images.unsplash.com/photo-1520315342629-6ea920342047?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
-        }
-      ]
-    };
+  components: { 
+    PetCard
   },
-  computed: {
-    filteredPets() {
-      return this.pets;
-    },
+  setup() {
+    // Estado
+    const pets = ref([]);
+    const allPets = ref([]);
+    const isUser = ref(false);
+    const searchQuery = ref('');
+    const activeFilter = ref('all');
+    const selectedBreed = ref('');
+    const selectedSize = ref('');
+    const currentSlide = ref(0);
+    const showFilters = ref(false);
+    const isLoading = ref(true);
+    const testimonialsSlider = ref(null);
+    const slideInterval = ref(null);
     
-    // Obtener todas las razas disponibles de los gatos
-    availableBreeds() {
+    // Filtros disponibles
+    const filters = [
+      { label: 'Todos', value: 'all' },
+      { label: 'Cachorros', value: 'kitten' },
+      { label: 'Adultos', value: 'adult' },
+      { label: 'Seniors', value: 'senior' }
+    ];
+    
+    // Pasos de adopción
+    const adoptionSteps = [
+      {
+        icon: '🔍',
+        title: 'Explora',
+        description: 'Descubre gatos adorables esperando una segunda oportunidad.'
+      },
+      {
+        icon: '📞',
+        title: 'Contacta',
+        description: 'Habla con nuestro equipo para saber mas sobre tu elegido.'
+      },
+      {
+        icon: '🏡',
+        title: 'Adopta',
+        description: 'Completa el proceso y dale a un peludito su nuevo hogar.'
+      }
+    ];
+    
+    // Testimonios
+    const testimonials = [
+      {
+        name: 'Maria',
+        catName: 'Luna',
+        text: 'Adoptar a Luna fue la mejor decision que tomamos. Ha llenado nuestro hogar de alegria y ronroneos.',
+        image: 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
+      },
+      {
+        name: 'Carlos',
+        catName: 'Simba',
+        text: 'Simba llegó a mi vida cuando más lo necesitaba. Es increible cómo un gatito puede cambiar tu perspectiva.',
+        image: 'https://images.unsplash.com/photo-1566847438217-76e82d383f84?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
+      },
+      {
+        name: 'Ana',
+        catName: 'Milo',
+        text: 'El proceso de adopción fue sencillo y el equipo muy atento. Milo se adapto rapidamente a su nuevo hogar.',
+        image: 'https://images.unsplash.com/photo-1520315342629-6ea920342047?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
+      }
+    ];
+
+    // Computed properties
+    const filteredPets = computed(() => pets.value);
+    
+    const availableBreeds = computed(() => {
       const breeds = new Set();
-      this.allPets.forEach(pet => {
+      allPets.value.forEach(pet => {
         if (pet.breed) {
           breeds.add(pet.breed);
         }
       });
       return Array.from(breeds).sort();
-    },
+    });
     
-    // Obtener todos los tamaños disponibles
-    availableSizes() {
+    const availableSizes = computed(() => {
       const sizes = new Set();
-      this.allPets.forEach(pet => {
+      allPets.value.forEach(pet => {
         if (pet.size) {
           sizes.add(pet.size);
         }
       });
       return Array.from(sizes).sort();
-    },
+    });
     
-    // Verificar si hay filtros activos
-    hasActiveFilters() {
-      return this.activeFilter !== 'all' || this.selectedBreed || this.selectedSize;
-    }
-  },
-  methods: {
-    async fetchPets() {
+    const hasActiveFilters = computed(() => {
+      return activeFilter.value !== 'all' || selectedBreed.value || selectedSize.value;
+    });
+
+    // Métodos
+    const fetchPets = async () => {
       try {
+        isLoading.value = true;
         const response = await axios.get('http://localhost:5000/api/pets');
-        this.allPets = response.data;
-        this.pets = response.data;
+        allPets.value = response.data;
+        pets.value = response.data;
       } catch (error) {
         console.error('Error al obtener las mascotas:', error);
+      } finally {
+        isLoading.value = false;
       }
-    },
+    };
     
-    checkUserRole() {
+    const checkUserRole = () => {
       const user = JSON.parse(localStorage.getItem('user'));
-      this.isUser = user && user.role !== 'admin';
-    },
+      isUser.value = user && user.role !== 'admin';
+    };
     
-    removePet(petId) {
-      this.pets = this.pets.filter(pet => pet._id !== petId);
-      this.allPets = this.allPets.filter(pet => pet._id !== petId);
-    },
+    const removePet = (petId) => {
+      pets.value = pets.value.filter(pet => pet._id !== petId);
+      allPets.value = allPets.value.filter(pet => pet._id !== petId);
+    };
     
-    filterPets() {
-      let filtered = [...this.allPets];
+    // Implementación de debounce para la búsqueda
+    let debounceTimeout;
+    const debouncedFilter = () => {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        filterPets();
+      }, 300);
+    };
+    
+    const filterPets = () => {
+      let filtered = [...allPets.value];
       
       // Filtrar por búsqueda
-      if (this.searchQuery) {
-        const query = this.searchQuery.toLowerCase();
+      if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase();
         filtered = filtered.filter(pet => 
           pet.name.toLowerCase().includes(query) || 
           (pet.description && pet.description.toLowerCase().includes(query)) ||
@@ -324,85 +431,142 @@ export default {
       }
       
       // Filtrar por categoría de edad
-      if (this.activeFilter !== 'all') {
+      if (activeFilter.value !== 'all') {
         filtered = filtered.filter(pet => {
           if (pet.ageCategory) {
-            return pet.ageCategory === this.activeFilter;
+            return pet.ageCategory === activeFilter.value;
           } else if (pet.age) {
             // Lógica alternativa basada en la edad
             const age = parseInt(pet.age);
-            if (this.activeFilter === 'kitten' && age < 1) return true;
-            if (this.activeFilter === 'adult' && age >= 1 && age < 7) return true;
-            if (this.activeFilter === 'senior' && age >= 7) return true;
+            if (activeFilter.value === 'kitten' && age < 1) return true;
+            if (activeFilter.value === 'adult' && age >= 1 && age < 7) return true;
+            if (activeFilter.value === 'senior' && age >= 7) return true;
           }
           return false;
         });
       }
       
       // Filtrar por raza
-      if (this.selectedBreed) {
-        filtered = filtered.filter(pet => pet.breed === this.selectedBreed);
+      if (selectedBreed.value) {
+        filtered = filtered.filter(pet => pet.breed === selectedBreed.value);
       }
       
       // Filtrar por tamaño
-      if (this.selectedSize) {
-        filtered = filtered.filter(pet => pet.size === this.selectedSize);
+      if (selectedSize.value) {
+        filtered = filtered.filter(pet => pet.size === selectedSize.value);
       }
       
-      this.pets = filtered;
-    },
+      pets.value = filtered;
+    };
     
-    resetFilters() {
-      this.searchQuery = '';
-      this.activeFilter = 'all';
-      this.selectedBreed = '';
-      this.selectedSize = '';
-      this.pets = [...this.allPets];
-    },
+    const resetFilters = () => {
+      searchQuery.value = '';
+      activeFilter.value = 'all';
+      selectedBreed.value = '';
+      selectedSize.value = '';
+      pets.value = [...allPets.value];
+    };
     
-    getFilterLabel(value) {
-      const filter = this.filters.find(f => f.value === value);
+    const getFilterLabel = (value) => {
+      const filter = filters.find(f => f.value === value);
       return filter ? filter.label : value;
-    },
+    };
     
-    nextSlide() {
-      if (!this.$refs.testimonialsSlider) return;
+    // Funciones para el slider de testimonios
+    const nextSlide = () => {
+      if (!testimonialsSlider.value) return;
       
-      const slider = this.$refs.testimonialsSlider;
+      currentSlide.value = (currentSlide.value + 1) % testimonials.length;
+      scrollToCurrentSlide();
+    };
+    
+    const prevSlide = () => {
+      if (!testimonialsSlider.value) return;
+      
+      currentSlide.value = (currentSlide.value - 1 + testimonials.length) % testimonials.length;
+      scrollToCurrentSlide();
+    };
+    
+    const goToSlide = (index) => {
+      currentSlide.value = index;
+      scrollToCurrentSlide();
+    };
+    
+    const scrollToCurrentSlide = () => {
+      const slider = testimonialsSlider.value;
       const cardWidth = slider.querySelector('.testimonial-card').offsetWidth + 20; // 20px de gap
       
-      this.currentSlide = (this.currentSlide + 1) % this.testimonials.length;
       slider.scrollTo({
-        left: cardWidth * this.currentSlide,
+        left: cardWidth * currentSlide.value,
         behavior: 'smooth'
       });
-    },
+    };
     
-    prevSlide() {
-      if (!this.$refs.testimonialsSlider) return;
+    // Lifecycle hooks
+    onMounted(() => {
+      fetchPets();
+      checkUserRole();
       
-      const slider = this.$refs.testimonialsSlider;
-      const cardWidth = slider.querySelector('.testimonial-card').offsetWidth + 20; // 20px de gap
+      // Auto-scroll testimonios
+      slideInterval.value = setInterval(() => {
+        nextSlide();
+      }, 5000);
       
-      this.currentSlide = (this.currentSlide - 1 + this.testimonials.length) % this.testimonials.length;
-      slider.scrollTo({
-        left: cardWidth * this.currentSlide,
-        behavior: 'smooth'
+      // Observador de intersección para animaciones al hacer scroll
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-in');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      // Observar secciones para animaciones
+      nextTick(() => {
+        document.querySelectorAll('.section-title, .process-step, .testimonial-card, .cta-content').forEach(el => {
+          observer.observe(el);
+        });
       });
-    }
-  },
-  mounted() {
-    this.fetchPets();
-    this.checkUserRole();
+    });
     
-    // Auto-scroll testimonios
-    this.slideInterval = setInterval(() => {
-      this.nextSlide();
-    }, 5000);
-  },
-  beforeDestroy() {
-    // Limpiar el intervalo cuando el componente se destruye
-    clearInterval(this.slideInterval);
+    onBeforeUnmount(() => {
+      // Limpiar el intervalo cuando el componente se destruye
+      if (slideInterval.value) {
+        clearInterval(slideInterval.value);
+      }
+    });
+
+    return {
+      pets,
+      allPets,
+      isUser,
+      searchQuery,
+      activeFilter,
+      selectedBreed,
+      selectedSize,
+      currentSlide,
+      showFilters,
+      isLoading,
+      testimonialsSlider,
+      filters,
+      adoptionSteps,
+      testimonials,
+      filteredPets,
+      availableBreeds,
+      availableSizes,
+      hasActiveFilters,
+      fetchPets,
+      checkUserRole,
+      removePet,
+      debouncedFilter,
+      filterPets,
+      resetFilters,
+      getFilterLabel,
+      nextSlide,
+      prevSlide,
+      goToSlide
+    };
   }
 };
 </script>
@@ -422,7 +586,7 @@ export default {
 
 .home-container {
   font-family: 'Baloo 2', cursive;
-  background: linear-gradient(135deg, #ffe9f3, #fff4d2);
+  background: linear-gradient(135deg, #fafafa, #fafafa);
   color: var(--dark-text);
   min-height: 100vh;
 }
@@ -529,6 +693,7 @@ export default {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  border: none;
 }
 
 .btn-neon {
@@ -602,6 +767,14 @@ export default {
   font-size: 2.4rem;
   margin-bottom: 2rem;
   color: var(--accent);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.section-title.animate-in {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Filtros avanzados */
@@ -628,11 +801,11 @@ export default {
   background-color: #f0f0f0;
 }
 
-.filter-toggle-btn svg {
+.transition-transform {
   transition: transform 0.3s ease;
 }
 
-.filter-toggle-btn .rotate-180 {
+.rotate-180 {
   transform: rotate(180deg);
 }
 
@@ -642,12 +815,6 @@ export default {
   padding: 1.5rem;
   margin-top: 1rem;
   box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .filter-group {
@@ -792,7 +959,30 @@ export default {
 
 .pet-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(255, 107, 129, 0.3);
+}
+
+/* Animaciones para la lista de mascotas */
+.pet-list-enter-active,
+.pet-list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.pet-list-enter-from,
+.pet-list-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+/* Animaciones para fade */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
 .empty-state {
@@ -815,10 +1005,34 @@ export default {
   margin-bottom: 1rem;
 }
 
+/* Estado de carga */
+.loading-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid var(--accent);
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 /* PROCESO */
 .process-section {
   padding: 5rem 0;
-  background: #fef6e4;
+  background: #fafafa;
   position: relative;
   overflow: hidden;
 }
@@ -852,9 +1066,24 @@ export default {
   text-align: center;
   width: 280px;
   box-shadow: 0 10px 25px rgba(255, 107, 129, 0.15);
-  transition: all 0.3s ease;
+  transition: all 0.5s ease;
   position: relative;
   overflow: hidden;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.process-step.animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.process-step-delay-1 {
+  transition-delay: 0.2s;
+}
+
+.process-step-delay-2 {
+  transition-delay: 0.4s;
 }
 
 .process-step::before {
@@ -917,6 +1146,14 @@ export default {
   display: flex;
   flex-direction: column;
   margin: 0 auto;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.5s ease;
+}
+
+.testimonial-card.animate-in {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .testimonial-image {
@@ -951,6 +1188,7 @@ export default {
 .slider-controls {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 1rem;
   margin-top: 2rem;
 }
@@ -974,6 +1212,26 @@ export default {
   color: white;
 }
 
+.slider-dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.slider-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.slider-dot.active {
+  background-color: var(--accent);
+  transform: scale(1.2);
+}
+
 /* LLAMADO A LA ACCIÓN */
 .cta-section {
   padding: 5rem 0;
@@ -985,6 +1243,14 @@ export default {
 .cta-content {
   max-width: 700px;
   margin: 0 auto;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.5s ease;
+}
+
+.cta-content.animate-in {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .cta-content h2 {
